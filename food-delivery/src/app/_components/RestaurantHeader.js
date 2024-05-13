@@ -1,7 +1,27 @@
+"use client";
 import Link from "next/link";
-import React from "react";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const RestaurantHeader = () => {
+	const [details, setDetails] = useState();
+	const router = useRouter();
+	const pathName = usePathname();
+	useEffect(() => {
+		let data = localStorage.getItem("restaurantUser");
+		if (!data && pathName == "/restaurant/dashboard") {
+			router.push("/restaurant");
+		} else if (data && pathName == "/restaurant") {
+			router.push("/restaurant/dashboard")
+
+		} else {
+			setDetails(JSON.parse(data));
+		}
+	},[]);
+	const handlelogOut = () => {
+		localStorage.removeItem("restaurantUser")
+		router.push("/restaurant");
+	}
 	return (
 		<div className="w-full px-20 py-2 flex justify-between items-center bg-slate-400">
 			<div>
@@ -12,8 +32,14 @@ const RestaurantHeader = () => {
 			</div>
 			<div className="flex gap-10">
 				<Link href="/">Home</Link>
-				<Link href="/">Login/Signup</Link>
-				<Link href="/">Profile</Link>
+				{details && details.name ? (
+					<>
+						<Link href="/">Profile</Link>
+						<button onClick={handlelogOut}>LogOut</button>
+					</>
+				) : (
+					<Link href="/">Login/Signup</Link>
+				)}
 			</div>
 		</div>
 	);
