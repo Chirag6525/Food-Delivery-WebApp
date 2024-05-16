@@ -21,7 +21,7 @@ const Dashboard = () => {
 			>
 				DashBoard
 			</button>
-			{addItem ? <AddFoodItem /> : <FoodItemList />}
+		  {addItem ? <AddFoodItem setAddItem={setAddItem} /> : <FoodItemList />}
 		</div>
 	);
 }

@@ -1,8 +1,10 @@
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 const FoodItemList = () => {
   const [foodItem, setFoodItem] = useState([])
-  useEffect(() => {
+  const router = useRouter()
+	useEffect(() => {
     loadFoodItem();
   }, [])
   const loadFoodItem = async () => {
@@ -19,7 +21,18 @@ const FoodItemList = () => {
       alert("Food Item List not Loading")
     }
   }
-  
+	const deleteFoodItem = async(id) => {
+		let response = await fetch("http://localhost:3000/api/restaurant/foods/" + id, {
+		  method: "delete"
+		});
+		response = await response.json()
+		if (response.success) {
+			loadFoodItem()
+		}
+		else {
+			alert("Food item not deleted")
+		}
+  }
   return (
 		<div className="flex items-center justify-center">
 			<div className="">
@@ -58,10 +71,12 @@ const FoodItemList = () => {
 										
 									</td>
 									<td className="border-black border-2 px-10 py-5">
-										<button className="border-black border-2 rounded-md bg-red-600 px-3 m-2">
+										<button onClick={()=>deleteFoodItem(item._id) } className="border-black border-2 rounded-md bg-red-600 px-3 m-2">
 											Delete
 										</button>
-										<button className="border-black border-2 rounded-md bg-green-600 px-3 m-2">
+										<button
+											onClick={()=>router.push('dashboard/'+item._id)}
+											className="border-black border-2 rounded-md bg-green-600 px-3 m-2">
 											Edit
 										</button>
 									</td>

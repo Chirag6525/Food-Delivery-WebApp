@@ -1,48 +1,58 @@
-import React, { useState } from "react";
+"use client";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-const AddFoodItem = (props) => {
+const EditFoodItem = (props) => {
 	const [name, setName] = useState("");
 	const [price, setPrice] = useState("");
 	const [path, setPath] = useState("");
 	const [desc, setDesc] = useState("");
-	const [error, setError] = useState(false)
-	const handleAddFoodItem = async () => {
-		console.log(name, price, path, desc);
-		if (!name || !price || !path || !desc) {
-			setError(true)
-			return false
-		} {
-			setError(false)
-		}
-		let resto_id;
-		const restaurantData = JSON.parse(localStorage.getItem("restaurantUser"));
-		if (restaurantData) {
-			resto_id = restaurantData._id;
-		}
-		let response = await fetch("http://localhost:3000/api/restaurant/foods", {
-			method: "POST",
-			body: JSON.stringify({
-				name,
-				price,
-				img_path: path,
-				desc,
-				resto_id,
-			}),
-		});
+	const [error, setError] = useState(false);
+	const router = useRouter();
+	useEffect(() => {
+		handleLoadFoodItem();
+	}, []);
+	const handleLoadFoodItem = async () => {
+		let response = await fetch(
+			"http://localhost:3000/api/restaurant/foods/edit/" + props.params.id
+		);
 		response = await response.json();
 		if (response.success) {
-			alert("Food Item Added");
-			props.setAddItem(false);
+			console.log(response.result);
+			setName(response.result.name);
+			setPrice(response.result.price);
+			setPath(response.result.img_path);
+			setDesc(response.result.desc);
+		}
+	};
+	const handleEditFoodItem = async () => {
+		if (!name || !price || !path || !desc) {
+			setError(true);
+			return false;
+		}
+		{
+			setError(false);
+		}
+		console.log(name, price, path, desc);
+		let response = await fetch(
+			"http://localhost:3000/api/restaurant/foods/edit/" + props.params.id,
+			{
+				method: "PUT",
+				body: JSON.stringify({ name, price, img_path: path, desc }),
+			}
+		);
+		response = await response.json();
+		if (response.success) {
+			router.push("../dashboard")
 		}
 		else {
-			alert("Food Item Not added")
-			
+			alert("data Not updated Please try again")
 		}
 	};
 	return (
 		<div className="flex items-center justify-center">
 			<div className="max-w-md w-full sapce-y-8">
-				<div className="mt-6 text-center text-3xl">Add new Food Item</div>
+				<div className="mt-6 text-center text-3xl">Update Food Item</div>
 				<div>
 					<div className="mt-6">
 						<input
@@ -104,9 +114,17 @@ const AddFoodItem = (props) => {
 				<div className="mt-4 flex justify-center items-center">
 					<button
 						className="group relative border-2  rounded-lg px-10 py-3 bg-red-600"
-						onClick={handleAddFoodItem}
+						onClick={handleEditFoodItem}
 					>
-						ADD Food Item
+						UpdateFood Item
+					</button>
+				</div>
+				<div className="mt-4 flex justify-center items-center">
+					<button
+						className="group relative border-2 rounded-lg px-5 py-2 bg-green-600"
+						onClick={() => router.push("../dashboard")}
+					>
+						Back to Food item
 					</button>
 				</div>
 			</div>
@@ -114,4 +132,4 @@ const AddFoodItem = (props) => {
 	);
 };
 
-export default AddFoodItem;
+export default EditFoodItem;
