@@ -31,12 +31,7 @@ const Page = (props) => {
 		setremoveCartData()
 	};
 	console.log(cartId);
-	const removeFromCart = (id) => {
-		setremoveCartData(id);
-		var localIds = cartId.filter((item) => item != id);
-		setCartData()
-		setCartId(localIds);
-	};
+	
 	const loadRestaurantDetails = async () => {
 		const id = props.searchParams.id;
 		console.log(id);

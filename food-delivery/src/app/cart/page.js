@@ -3,15 +3,36 @@ import React, { useState } from "react";
 import CustomerHeader from "../_components/CustomerHeader";
 import RestaurantFooter from "../_components/RestaurantFooter";
 import { DELIVERY_CHARGES, TAX } from "../lib/constant";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
 	const [cartStorage, setCartStorage] = useState(
 		JSON.parse(localStorage.getItem("cart"))
     );
-    const [total, setTotal] = useState(() => cartStorage.length == 1 ? cartStorage[0].price : cartStorage.reduce((a, b)=> {
+    const [total, setTotal] = useState(() => cartStorage?.length == 1 ? cartStorage[0].price : cartStorage?.reduce((a, b)=> {
     return a.price+b.price
     }))
-    console.log(total)
+	console.log(total)
+	const route = useRouter()
+	useEffect(() => {
+		if (!total) {
+		  route.push('/')
+	  }
+	}, [total])
+	
+	const orderNow = () => {
+		if (JSON.parse(localStorage.getItem('user'))) {
+			route.push('/order')
+		} else {
+			route.push('/user-auth?order=true')
+		}
+	}
+	const removeFromCart = (id) => {
+		setremoveCartData(id);
+		var localIds = cartId.filter((item) => item != id);
+		setCartData();
+		setCartId(localIds);
+	};
 	return (
 		<div className="bg-[url('https://wallpaperaccess.com/full/1537562.png')] flex-col justify-center items-center h-screen bg-cover">
 			<CustomerHeader />
@@ -62,7 +83,8 @@ const Page = () => {
 					<span>{total + (total * TAX) / 100 + DELIVERY_CHARGES}</span>
 				</div>
 				<div className="flex justify-center items-center pt-4">
-					<button className="border-black border-2 rounded-md bg-green-600 px-3 m-2 cursor-pointer ">
+					<button onClick={orderNow}
+						className="border-black border-2 rounded-md bg-green-600 px-3 m-2 cursor-pointer ">
 						ORDER
 					</button>
 				</div>

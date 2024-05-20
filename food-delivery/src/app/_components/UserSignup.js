@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
-const UserSignup = () => {
+const UserSignup = (props) => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -21,7 +21,11 @@ const UserSignup = () => {
 			const { result } = response
 			delete result.password
 			localStorage.setItem('user', JSON.stringify(result))
-			route.push('/')
+			if (props.redirect?.order) {
+				route.push("/order");
+			} else {
+				route.push("/");
+			}
 		}
 		else {
 			alert("Signup Failed")
